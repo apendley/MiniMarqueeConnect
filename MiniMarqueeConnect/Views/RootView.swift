@@ -79,7 +79,7 @@ struct RootView: View {
                         .font(.title)
                 }
         }
-        .foregroundStyle(.primary)
+        .foregroundStyle(.white)
         .shadow(radius: 8)
     }
     

@@ -471,14 +471,14 @@ where T: Hashable & CaseIterable & RawRepresentable,
 }
 
 #Preview {
+    // Use this data source to edit UI with a fake (i.e. not connected) data source.
+    let dataSource = MarqueeSettings.DataSource.Preview(loadDelay: 0, updateDelay: 3)
+    
+    // Or you can use the actual data source if you've connected your computer's Wi-Fi to the MiniMarquee
+    //let dataSource = MarqueeSettings.DataSource.Remote()
+    
     // Present in a navigation stack so we can see the title and toolbar in the preview
     NavigationStack {
-        // Use this data source to edit UI with a fake (i.e. not connected) data source.
-        let dataSource = MarqueeSettings.DataSource.Preview(loadDelay: 0, updateDelay: 3)
-        
-        // Or you can use the actual data source if you've connected your computer's Wi-Fi to the MiniMarquee
-        //let dataSource = MarqueeSettings.DataSource.Remote()
-        
         MarqueeSettingsView(requestLocalNetworkPermission: nil, dataSource: dataSource)
     }
 }

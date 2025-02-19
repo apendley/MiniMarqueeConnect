@@ -20,22 +20,32 @@
 import SwiftUI
 
 struct RootView: View {
-    @State private var colorCycleTask: Task<Void, Never>?
-    @State private var colorCycleHue: Double
-    @State private var backgroundColor: Color
-    
+    @State private var backgroundHue: Double = 0
     @State private var isShowingSettings = false
     
-    init() {
-        let startingHue = 0.65
-        colorCycleHue = startingHue
-        backgroundColor = .connectBackgroundColor(hue: startingHue)
-    }
+    let colorCycleDuration: Double = 30
+    
+    // Offset so we start at blue instead of red
+    let colorCycleOffset: Double = 234
     
     var body: some View {
         NavigationStack {
             ZStack {
-                backgroundColor
+                Rectangle()
+                    .fill(Color(UIColor(hue: backgroundHue,
+                                        saturation: 0.7,
+                                        brightness: 0.5,
+                                        alpha: 1.0)))
+                    .hueRotation(Angle(degrees: backgroundHue + colorCycleOffset))
+                    .onAppear {
+                        withAnimation(
+                            .linear(duration: colorCycleDuration)
+                            .repeatForever(autoreverses: false)
+                        ) {
+                            backgroundHue = 360
+                        }
+                    }
+                
                 actionButton
             }
             .ignoresSafeArea()
@@ -52,8 +62,6 @@ struct RootView: View {
                 }
                 .padding()
             }
-            .onAppear(perform: startColorCycle)
-            .onDisappear(perform: stopColorCycle)
             .navigationDestination(isPresented: $isShowingSettings) {
                 MarqueeSettingsView()
             }
@@ -81,33 +89,6 @@ struct RootView: View {
         }
         .foregroundStyle(.white)
         .shadow(radius: 8)
-    }
-    
-    private func startColorCycle() {
-        if colorCycleTask != nil {
-            return
-        }
-        
-        colorCycleTask = Task {
-            while Task.isCancelled == false {
-                try? await Task.sleep(for: .seconds(0.2))
-                
-                // Slowly and continuously increase while wrapping back to zero at 1.0
-                colorCycleHue = (colorCycleHue + 0.005).truncatingRemainder(dividingBy: 1.0)
-                backgroundColor = .connectBackgroundColor(hue: colorCycleHue)
-            }
-        }
-    }
-    
-    private func stopColorCycle() {
-        colorCycleTask?.cancel()
-        colorCycleTask = nil
-    }
-}
-
-private extension Color {
-    static func connectBackgroundColor(hue: Double) -> Self {
-        .init(hue: hue, saturation: 0.7, brightness: 0.5)
     }
 }
 

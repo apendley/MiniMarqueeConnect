@@ -78,6 +78,10 @@ struct MarqueeSettingsView: View {
         viewState.isBusy ? 0.5 : 1.0
     }
     
+    private var shouldShowHideKeyboardButton: Bool {
+        ProcessInfo.processInfo.isiOSAppOnMac == false
+    }
+    
     // If nil, the permission check is skipped (useful for previews).
     // Otherwise, this method is used to request the local network
     // permission state, possibly initiating a system prompt.
@@ -183,9 +187,11 @@ struct MarqueeSettingsView: View {
                         }
                     }
                     .toolbar {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            Button("Dismiss Keyboard", systemImage: "keyboard.chevron.compact.down.fill") {
-                                isMessageFocused = false
+                        if shouldShowHideKeyboardButton {
+                            ToolbarItemGroup(placement: .keyboard) {
+                                Button("Dismiss Keyboard", systemImage: "keyboard.chevron.compact.down.fill") {
+                                    isMessageFocused = false
+                                }
                             }
                         }
                     }

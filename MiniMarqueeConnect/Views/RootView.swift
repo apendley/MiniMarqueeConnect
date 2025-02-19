@@ -23,10 +23,14 @@ struct RootView: View {
     @State private var backgroundHue: Double = 0
     @State private var isShowingSettings = false
     
-    let colorCycleDuration: Double = 30
+    private let colorCycleDuration: Double = 30
     
     // Offset so we start at blue instead of red
-    let colorCycleOffset: Double = 234
+    private let colorCycleOffset: Double = 234
+    
+    private var shouldShowSettingsButton: Bool {
+        ProcessInfo.processInfo.isiOSAppOnMac == false
+    }
     
     var body: some View {
         NavigationStack {
@@ -50,17 +54,19 @@ struct RootView: View {
             }
             .ignoresSafeArea()
             .safeAreaInset(edge: .bottom) {
-                Button {
-                    if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-                        UIApplication.shared.open(settingsURL)
+                if shouldShowSettingsButton {
+                    Button {
+                        if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(settingsURL)
+                        }
+                    } label: {
+                        Image(systemName: "gear")
+                            .resizable()
+                            .frame(width: 44, height: 44)
+                            .foregroundStyle(.white)
                     }
-                } label: {
-                    Image(systemName: "gear")
-                        .resizable()
-                        .frame(width: 44, height: 44)
-                        .foregroundStyle(.white)
+                    .padding()
                 }
-                .padding()
             }
             .navigationDestination(isPresented: $isShowingSettings) {
                 MarqueeSettingsView()
